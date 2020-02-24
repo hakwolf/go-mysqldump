@@ -28,11 +28,12 @@ type Data struct {
 	MaxAllowedPacket int
 	LockTables       bool
 
-	tx         *sql.Tx
-	headerTmpl *template.Template
-	tableTmpl  *template.Template
-	footerTmpl *template.Template
-	err        error
+	tx            *sql.Tx
+	headerTmpl    *template.Template
+	tableTmpl     *template.Template
+	tableDataTmpl *template.Template
+	footerTmpl    *template.Template
+	err           error
 }
 
 type table struct {
@@ -100,7 +101,9 @@ DROP TABLE IF EXISTS {{ .NameEsc }};
  SET character_set_client = utf8mb4 ;
 {{ .CreateSQL }};
 /*!40101 SET character_set_client = @saved_cs_client */;
+`
 
+const tableDataTmpl = `
 --
 -- Dumping data for table {{ .NameEsc }}
 --
@@ -173,6 +176,9 @@ func (data *Data) Dump() error {
 		if err := data.dumpTable(name); err != nil {
 			return err
 		}
+		if err := data.dumpTableData(name); err != nil {
+			return err
+		}
 	}
 	if data.err != nil {
 		return data.err
@@ -209,8 +215,23 @@ func (data *Data) dumpTable(name string) error {
 	return data.writeTable(table)
 }
 
+func (data *Data) dumpTableData(name string) error {
+	if data.err != nil {
+		return data.err
+	}
+	table := data.createTable(name)
+	return data.writeTableData(table)
+}
+
 func (data *Data) writeTable(table *table) error {
 	if err := data.tableTmpl.Execute(data.Out, table); err != nil {
+		return err
+	}
+	return table.Err
+}
+
+func (data *Data) writeTableData(table *table) error {
+	if err := data.tableDataTmpl.Execute(data.Out, table); err != nil {
 		return err
 	}
 	return table.Err
@@ -226,6 +247,11 @@ func (data *Data) getTemplates() (err error) {
 	}
 
 	data.tableTmpl, err = template.New("mysqldumpTable").Parse(tableTmpl)
+	if err != nil {
+		return
+	}
+
+	data.tableDataTmpl, err = template.New("mysqldumpTable").Parse(tableDataTmpl)
 	if err != nil {
 		return
 	}
