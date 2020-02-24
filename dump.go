@@ -119,8 +119,17 @@ UNLOCK TABLES;
 
 const nullType = "NULL"
 
-// Dump data using struct
+// Dump dumps all database data, including table structure.
 func (data *Data) Dump() error {
+	return data.dump(true)
+}
+
+// DumpMigration dumps all database data, excluding table structure.
+func (data *Data) DumpMigration() error {
+	return data.dump(false)
+}
+
+func (data *Data) dump(includeStructure bool) error {
 	meta := metaData{
 		DumpVersion: Version,
 	}
@@ -173,8 +182,10 @@ func (data *Data) Dump() error {
 	}
 
 	for _, name := range tables {
-		if err := data.dumpTable(name); err != nil {
-			return err
+		if includeStructure {
+			if err := data.dumpTable(name); err != nil {
+				return err
+			}
 		}
 		if err := data.dumpTableData(name); err != nil {
 			return err
