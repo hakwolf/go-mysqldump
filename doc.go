@@ -33,8 +33,8 @@ This example uses the mysql driver (https://github.com/go-sql-driver/mysql) to c
             return
         }
 
-        // Register database with mysqldump
-        dumper, err := mysqldump.Register(db, dumpDir, dumpFilenameFormat)
+        // RegisterDir database with mysqldump
+        dumper, err := mysqldump.RegisterDir(db, dumpDir, dumpFilenameFormat)
         if err != nil {
             fmt.Println("Error registering databse:", err)
             return

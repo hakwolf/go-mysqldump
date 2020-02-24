@@ -10,13 +10,13 @@ import (
 )
 
 /*
-Register a new dumper.
+RegisterDir creates a new dumper that outputs to the given directory.
 
 	db: Database that will be dumped (https://golang.org/pkg/database/sql/#DB).
 	dir: Path to the directory where the dumps will be stored.
 	format: Format to be used to name each dump file. Uses time.Time.Format (https://golang.org/pkg/time/#Time.Format). format appended with '.sql'.
 */
-func Register(db *sql.DB, dir, format string) (*Data, error) {
+func RegisterDir(db *sql.DB, dir, format string) (*Data, error) {
 	if !isDir(dir) {
 		return nil, errors.New("Invalid directory")
 	}
@@ -36,18 +36,15 @@ func Register(db *sql.DB, dir, format string) (*Data, error) {
 		return nil, err
 	}
 
-	return &Data{
-		Out:        f,
-		Connection: db,
-	}, nil
+	return Register(db, f)
 }
 
-// Dump Creates a MYSQL dump from the connection to the stream.
-func Dump(db *sql.DB, out io.Writer) error {
-	return (&Data{
+// Register creates a new dumper for the given database and Writer.
+func Register(db *sql.DB, out io.Writer) (*Data, error) {
+	return &Data{
 		Connection: db,
 		Out:        out,
-	}).Dump()
+	}, nil
 }
 
 // Close the dumper.
