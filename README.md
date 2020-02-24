@@ -9,7 +9,7 @@ import (
   "database/sql"
   "fmt"
 
-  "github.com/jamf/go-mysqldump"
+  "github.com/writeas/go-mysqldump"
   "github.com/go-sql-driver/mysql"
 )
 
@@ -51,5 +51,5 @@ func main() {
 }
 ```
 
-[![GoDoc](https://godoc.org/github.com/jamf/go-mysqldump?status.svg)](https://godoc.org/github.com/jamf/go-mysqldump)
-[![Build Status](https://travis-ci.org/jamf/go-mysqldump.svg?branch=master)](https://travis-ci.org/jamf/go-mysqldump)
+[![GoDoc](https://godoc.org/github.com/writeas/go-mysqldump?status.svg)](https://godoc.org/github.com/writeas/go-mysqldump)
+[![Build Status](https://travis-ci.org/writeas/go-mysqldump.svg?branch=master)](https://travis-ci.org/writeas/go-mysqldump)
